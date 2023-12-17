@@ -31,6 +31,7 @@ while True:
     
     # Convert the data to an image
     img = cv2.imdecode(np.frombuffer(buffer, dtype='uint8'), cv2.IMREAD_COLOR)
+    print(img.shape)
 
     # Display the image
     cv2.imshow('Screen', img)
