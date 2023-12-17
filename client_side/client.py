@@ -3,11 +3,15 @@ import cv2
 import numpy as np
 import mss
 import commands
-from config import PORT_NUMBER, SERVER_IP_ADDRESS
+from config import COMMAND_PORT, VIDEO_PORT, SERVER_IP_ADDRESS
 
-# Connect to the server
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((SERVER_IP_ADDRESS, PORT_NUMBER))  # Replace with server IP and port
+# Connect to the server for commands
+command_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+command_socket.connect((SERVER_IP_ADDRESS, COMMAND_PORT))
+
+# Connect to the server for video
+video_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+video_socket.connect((SERVER_IP_ADDRESS, VIDEO_PORT))
 
 
 def process_command(command):
@@ -35,6 +39,7 @@ def process_command(command):
             commands.type_string(text)
 
 
+
 with mss.mss() as sct:
     monitor = sct.monitors[1]
 
@@ -43,13 +48,13 @@ with mss.mss() as sct:
         img = np.array(sct.grab(monitor))
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
         ret, buffer = cv2.imencode('.jpg', img)
-        client_socket.sendall(len(buffer).to_bytes(4, byteorder='big'))
-        client_socket.sendall(buffer)
+        video_socket.sendall(len(buffer).to_bytes(4, byteorder='big'))
+        video_socket.sendall(buffer)
 
         # Non-blocking receive for commands
         try:
-            client_socket.settimeout(0.01)
-            command = client_socket.recv(1024).decode()
+            command_socket.settimeout(0.01)
+            command = command_socket.recv(1024).decode()
             if command:
                 process_command(command)
         except socket.timeout:
