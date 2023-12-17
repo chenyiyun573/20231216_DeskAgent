@@ -1,14 +1,24 @@
 import socket
 import cv2
 import numpy as np
+import threading
+
+# Function to send commands to the client
+def send_commands(conn):
+    while True:
+        cmd = input("Enter command: ")  # Command input from the terminal
+        conn.sendall(cmd.encode())
 
 # Set up the socket for listening
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('0.0.0.0', PORT_NUMBER))  # Bind to all interfaces on the specified port
+server_socket.bind(('0.0.0.0', 4000))
 server_socket.listen(5)
 
 # Accept a client connection
 conn, addr = server_socket.accept()
+
+# Start a thread to send commands to the client
+threading.Thread(target=send_commands, args=(conn,)).start()
 
 while True:
     # Read the size of the image data
