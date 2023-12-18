@@ -14,13 +14,13 @@ def click_mouse(left=True):
         ctypes.windll.user32.mouse_event(8, 0, 0, 0, 0)  # Right click down
         ctypes.windll.user32.mouse_event(16, 0, 0, 0, 0)  # Right click up
 
-# Define necessary structures for SendInput
 class KEYBDINPUT(ctypes.Structure):
     _fields_ = [("wVk", wintypes.WORD),
-                ("wScan", wintypes.WORD),
-                ("dwFlags", wintypes.DWORD),
-                ("time", wintypes.DWORD),
-                ("dwExtraInfo", wintypes.ULONG_PTR)]
+               ("wScan", wintypes.WORD),
+               ("dwFlags", wintypes.DWORD),
+               ("time", wintypes.DWORD),
+               ("dwExtraInfo", ctypes.POINTER(ctypes.c_ulonglong))]
+
 
 class INPUT(ctypes.Structure):
     class _INPUT(ctypes.Union):
